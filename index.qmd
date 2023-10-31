@@ -1,0 +1,29 @@
+---
+title: "Listen to Karel"
+format: html
+editor: source
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(tidyverse)
+df <- readxl::read_xlsx("karel_praktika.xlsx")
+
+df |> 
+  mutate(id = 1:n()) |> 
+  select(id, sentence) |> 
+  writexl::write_xlsx("fill_me.xlsx")
+
+df |> 
+  mutate(id = 1:n(),
+         audio = str_remove(source, ".eaf"),
+         audio = str_c(audio, "-", round(as.double(time_start)*1000)),
+         audio = str_c(audio, "-", round(as.double(time_end)*1000)),
+         audio = str_c("http://lingconlab.ru/karelrus/OUT/", audio, ".wav"),
+         audio = glue::glue('<audio controls="" preload="none"><source src="{audio}" type="audio/ogg"></audio> ')) |> 
+  select(id, sentence, audio) |> 
+  DT::datatable(escape = FALSE, rownames = FALSE)
+```
+
+
